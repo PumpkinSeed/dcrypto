@@ -1,6 +1,23 @@
-// TODO: Put public facing types in this file.
+enum TextType {
+  base64,
+  pure,
+}
 
-/// Checks if you are awesome. Spoiler: you are.
-class Awesome {
-  bool get isAwesome => true;
+abstract class CryptoDescriptor {
+  String encrypt(String plaintext, String key);
+  String decrypt(String chiphertext, String key);
+}
+
+class Crypto<T extends CryptoDescriptor> {
+  T descriptor;
+
+  Crypto(this.descriptor);
+
+  String encrypt(String plaintext, String key) {
+    return descriptor.encrypt(plaintext, key);
+  }
+
+  String decrypt(String plaintext, String key) {
+    return descriptor.decrypt(plaintext, key);
+  }
 }
