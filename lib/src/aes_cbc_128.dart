@@ -35,7 +35,32 @@ class AES_CBC_128 implements CryptoDescriptor {
   }
 
   @override
-  String encrypt(String plaintext, String key) {
-    throw UnimplementedError();
+  String encrypt(String plaintext, String key_) {
+    Key key;
+    switch (keyType) {
+      case TextType.base64:
+        key = Key.fromBase64(key_);
+        break;
+      case TextType.pure:
+        key = Key.fromUtf8(key_);
+        break;
+    }
+    final iv = IV.fromUtf8(InitializationVector);
+
+    final encrypter = Encrypter(AES(key, mode: AESMode.cbc, padding: null));
+
+    switch (plaintextType) {
+      case TextType.base64:
+        var enc = encrypter.encrypt(plaintext, iv: iv);
+        switch (chipertextType) {
+          case TextType.base64:
+            return enc.base64;
+          case TextType.pure:
+            return enc.toString();
+        }
+        break;
+      case TextType.pure:
+      // TODO: implement
+    }
   }
 }

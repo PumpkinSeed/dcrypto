@@ -1,6 +1,6 @@
-import 'package:dcrypto/dcrypto.dart';
+// import 'package:dcrypto/dcrypto.dart';
 
-void main() {
-  var awesome = Awesome();
-  print('awesome: ${awesome.isAwesome}');
-}
+// void main() {
+//   var awesome = Awesome();
+//   print('awesome: ${awesome.isAwesome}');
+// }
