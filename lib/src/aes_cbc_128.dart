@@ -26,9 +26,19 @@ class AES_CBC_128 implements CryptoDescriptor {
 
     final encrypter = Encrypter(AES(key, mode: AESMode.cbc, padding: null));
 
+    OUTER:
     switch (chipertextType) {
       case TextType.base64:
-        return encrypter.decrypt(Encrypted.fromBase64(chiphertext), iv: iv);
+        INNER:
+        switch (plaintextType) {
+          case TextType.base64:
+            var e =
+                encrypter.decrypt(Encrypted.fromBase64(chiphertext), iv: iv);
+            return base64.encode(utf8.encode(e));
+          case TextType.pure:
+            return encrypter.decrypt(Encrypted.fromBase64(chiphertext), iv: iv);
+        }
+        break OUTER;
       case TextType.pure:
       // TODO: implement
     }
@@ -51,7 +61,9 @@ class AES_CBC_128 implements CryptoDescriptor {
 
     switch (plaintextType) {
       case TextType.base64:
-        var enc = encrypter.encrypt(plaintext, iv: iv);
+        var decodedText = utf8.decode(base64.decode(plaintext));
+        print('text: $decodedText');
+        var enc = encrypter.encrypt(decodedText, iv: iv);
         switch (chipertextType) {
           case TextType.base64:
             return enc.base64;
