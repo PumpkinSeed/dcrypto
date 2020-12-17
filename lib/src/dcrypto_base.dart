@@ -12,7 +12,6 @@ abstract class CryptoDescriptor {
 
 class Crypto<T extends CryptoDescriptor> {
   TextType plaintextType = TextType.base64;
-  TextType ciphertextType = TextType.base64;
   TextType keyType = TextType.base64;
   T descriptor;
 
@@ -21,13 +20,11 @@ class Crypto<T extends CryptoDescriptor> {
   String encrypt(String plaintext_, String key_) {
     var key = _decode(keyType, key_);
     var plaintext = _decode(plaintextType, plaintext_);
-    var enc = descriptor.encrypt(plaintext, key);
-    return _encode(ciphertextType, enc);
+    return descriptor.encrypt(plaintext, key);
   }
 
-  String decrypt(String ciphertext_, String key_) {
+  String decrypt(String ciphertext, String key_) {
     var key = _decode(keyType, key_);
-    var ciphertext = _decode(ciphertextType, ciphertext_);
     var dec = descriptor.decrypt(ciphertext, key);
     return _encode(plaintextType, dec);
   }
