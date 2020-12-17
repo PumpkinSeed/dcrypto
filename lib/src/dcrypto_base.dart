@@ -21,3 +21,8 @@ class Crypto<T extends CryptoDescriptor> {
     return descriptor.decrypt(plaintext, key);
   }
 }
+
+class CryptoException implements Exception {
+  String cause;
+  CryptoException(this.cause);
+}

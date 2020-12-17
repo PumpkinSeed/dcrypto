@@ -13,66 +13,106 @@ class AES_CBC_128 implements CryptoDescriptor {
 
   @override
   String decrypt(String chiphertext, String key_) {
+    // Fetch key from the String
     Key key;
-    switch (keyType) {
-      case TextType.base64:
-        key = Key.fromBase64(key_);
-        break;
-      case TextType.pure:
-        key = Key.fromUtf8(key_);
-        break;
+    try {
+      key = _fetchKey(key_);
+    } catch (e) {
+      rethrow;
     }
     final iv = IV.fromUtf8(InitializationVector);
-
     final encrypter = Encrypter(AES(key, mode: AESMode.cbc, padding: null));
 
-    OUTER:
-    switch (chipertextType) {
-      case TextType.base64:
-        INNER:
-        switch (plaintextType) {
-          case TextType.base64:
-            var e =
-                encrypter.decrypt(Encrypted.fromBase64(chiphertext), iv: iv);
-            return base64.encode(utf8.encode(e));
-          case TextType.pure:
-            return encrypter.decrypt(Encrypted.fromBase64(chiphertext), iv: iv);
-        }
-        break OUTER;
-      case TextType.pure:
-      // TODO: implement
+    // Do the actual decrypt after fetch the encrypted data from ciphertext
+    String e;
+    try {
+      switch (chipertextType) {
+        case TextType.base64:
+          e = encrypter.decrypt(Encrypted.fromBase64(chiphertext), iv: iv);
+          break;
+        case TextType.pure:
+          e = encrypter.decrypt(Encrypted.fromUtf8(chiphertext), iv: iv);
+          break;
+        default:
+          throw CryptoException('Invalid chipertextType submitted');
+      }
+    } catch (e) {
+      rethrow;
     }
+
+    // Normalize result based on the plaintextType
+    try {
+      switch (plaintextType) {
+        case TextType.base64:
+          return base64.encode(utf8.encode(e));
+        case TextType.pure:
+          return e;
+      }
+    } catch (e) {
+      rethrow;
+    }
+
+    throw CryptoException('Invalid plaintextType submitted');
   }
 
   @override
   String encrypt(String plaintext, String key_) {
+    // Fetch key from the String
     Key key;
-    switch (keyType) {
-      case TextType.base64:
-        key = Key.fromBase64(key_);
-        break;
-      case TextType.pure:
-        key = Key.fromUtf8(key_);
-        break;
+    try {
+      key = _fetchKey(key_);
+    } catch (e) {
+      rethrow;
     }
     final iv = IV.fromUtf8(InitializationVector);
-
     final encrypter = Encrypter(AES(key, mode: AESMode.cbc, padding: null));
 
-    switch (plaintextType) {
-      case TextType.base64:
-        var decodedText = utf8.decode(base64.decode(plaintext));
-        print('text: $decodedText');
-        var enc = encrypter.encrypt(decodedText, iv: iv);
-        switch (chipertextType) {
-          case TextType.base64:
-            return enc.base64;
-          case TextType.pure:
-            return enc.toString();
-        }
-        break;
-      case TextType.pure:
-      // TODO: implement
+    // Do the actual encrypt after fetch the decrypted data from plaintext
+    Encrypted enc;
+    try {
+      switch (plaintextType) {
+        case TextType.base64:
+          var decodedText = utf8.decode(base64.decode(plaintext));
+          enc = encrypter.encrypt(decodedText, iv: iv);
+          break;
+        case TextType.pure:
+          enc = encrypter.encrypt(plaintext, iv: iv);
+          break;
+        default:
+          throw CryptoException('Invalid plaintextType submitted');
+      }
+    } catch (e) {
+      rethrow;
+    }
+
+    // Normalize result based on the chipertextType
+    try {
+      switch (chipertextType) {
+        case TextType.base64:
+          return enc.base64;
+        case TextType.pure:
+          return enc.toString();
+      }
+    } catch (e) {
+      rethrow;
+    }
+
+    throw CryptoException('Invalid chipertextType submitted');
+  }
+
+  Key _fetchKey(String key) {
+    try {
+      switch (keyType) {
+        case TextType.base64:
+          return Key.fromBase64(key);
+        case TextType.pure:
+          return Key.fromUtf8(key);
+          break;
+        default:
+          throw CryptoException('Invalid keyType submitted');
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }
