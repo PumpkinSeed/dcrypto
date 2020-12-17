@@ -4,9 +4,8 @@ import 'dart:convert';
 
 void main() {
   group('A group of tests', () {
-    var a = AES_CBC_128('2271z4734hxepwb6');
-    a.keyType = TextType.pure;
-    var c = Crypto(a);
+    var c = Crypto(AES_CBC_128('2271z4734hxepwb6'));
+    c.keyType = TextType.pure;
 
     var key = 'xeq1m8i959r3bwgu';
     var plaintextBase64 = 'bTUxdWFxZGcyNjNhNW53Mw=='; // m51uaqdg263a5nw3
