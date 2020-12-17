@@ -7,6 +7,7 @@ enum TextType {
 
 abstract class CryptoDescriptor {
   String encrypt(String plaintext, String key);
+
   String decrypt(String ciphertext, String key);
 }
 
@@ -30,37 +31,30 @@ class Crypto<T extends CryptoDescriptor> {
   }
 
   String _encode(TextType type, String data) {
-    try {
-      switch (type) {
-        case TextType.base64:
-          return base64.encode(utf8.encode(data));
-        case TextType.pure:
-          return data;
-        default:
-          throw CryptoException('Invalid type submitted for encode: $type');
-      }
-    } catch (e) {
-      rethrow;
+    switch (type) {
+      case TextType.base64:
+        return base64.encode(utf8.encode(data));
+      case TextType.pure:
+        return data;
+      default:
+        throw CryptoException('Invalid type submitted for encode: $type');
     }
   }
 
   String _decode(TextType type, String data) {
-    try {
-      switch (type) {
-        case TextType.base64:
-          return utf8.decode(base64.decode(data));
-        case TextType.pure:
-          return data;
-        default:
-          throw CryptoException('Invalid type submitted for decode: $type');
-      }
-    } catch (e) {
-      rethrow;
+    switch (type) {
+      case TextType.base64:
+        return utf8.decode(base64.decode(data));
+      case TextType.pure:
+        return data;
+      default:
+        throw CryptoException('Invalid type submitted for decode: $type');
     }
   }
 }
 
 class CryptoException implements Exception {
   String cause;
+
   CryptoException(this.cause);
 }
