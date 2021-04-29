@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dcrypto/dcrypto.dart';
 import 'package:encrypt/encrypt.dart';
 
@@ -7,14 +9,14 @@ class AES_CBC_128 implements CryptoDescriptor {
   AES_CBC_128(this.InitializationVector);
 
   @override
-  String encrypt(String plaintext, String key) {
+  String encrypt(List<int> plaintext, List<int> key) {
     final iv = IV.fromUtf8(InitializationVector);
 
     // Do the actual encrypt
     Encrypted enc;
     try {
-      enc = Encrypter(AES(Key.fromUtf8(key), mode: AESMode.cbc, padding: null))
-          .encrypt(plaintext, iv: iv);
+      enc = Encrypter(AES(Key(Uint8List.fromList(key)), mode: AESMode.cbc, padding: null))
+          .encryptBytes(plaintext, iv: iv);
     } catch (e) {
       rethrow;
     }
@@ -23,14 +25,14 @@ class AES_CBC_128 implements CryptoDescriptor {
   }
 
   @override
-  String decrypt(String ciphertext, String key) {
+  List<int> decrypt(List<int> ciphertext, List<int> key) {
     final iv = IV.fromUtf8(InitializationVector);
 
     // Do the actual decrypt
-    String dec;
+    List<int> dec;
     try {
-      dec = Encrypter(AES(Key.fromUtf8(key), mode: AESMode.cbc, padding: null))
-          .decrypt(Encrypted.fromBase64(ciphertext), iv: iv);
+      dec = Encrypter(AES(Key(Uint8List.fromList(key)), mode: AESMode.cbc, padding: null))
+          .decryptBytes(Encrypted(Uint8List.fromList(ciphertext)), iv: iv);
     } catch (e) {
       rethrow;
     }

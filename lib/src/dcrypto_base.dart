@@ -6,9 +6,9 @@ enum TextType {
 }
 
 abstract class CryptoDescriptor {
-  String encrypt(String plaintext, String key);
+  String encrypt(List<int> plaintext, List<int> key);
 
-  String decrypt(String ciphertext, String key);
+  List<int> decrypt(List<int> ciphertext, List<int> key);
 }
 
 class Crypto<T extends CryptoDescriptor> {
@@ -24,29 +24,30 @@ class Crypto<T extends CryptoDescriptor> {
     return descriptor.encrypt(plaintext, key);
   }
 
-  String decrypt(String ciphertext, String key_) {
+  String decrypt(String ciphertext_, String key_) {
     var key = _decode(keyType, key_);
+    var ciphertext = _decode(plaintextType, ciphertext_);
     var dec = descriptor.decrypt(ciphertext, key);
     return _encode(plaintextType, dec);
   }
 
-  String _encode(TextType type, String data) {
+  String _encode(TextType type, List<int> data) {
     switch (type) {
       case TextType.base64:
-        return base64.encode(utf8.encode(data));
+        return base64.encode(data);
       case TextType.pure:
-        return data;
+        return String.fromCharCodes(data);
       default:
         throw CryptoException('Invalid type submitted for encode: $type');
     }
   }
 
-  String _decode(TextType type, String data) {
+  List<int> _decode(TextType type, String data) {
     switch (type) {
       case TextType.base64:
-        return utf8.decode(base64.decode(data));
+        return base64.decode(data);
       case TextType.pure:
-        return data;
+        return data.runes.toList();
       default:
         throw CryptoException('Invalid type submitted for decode: $type');
     }
