@@ -1,5 +1,5 @@
 name: dcrypto
-description: A starting point for Dart libraries or applications.
+description: Minimal cryptographic library for Dart.
 version: 0.3.0
 repository: https://github.com/PumpkinSeed/dcrypto
 
