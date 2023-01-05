@@ -1,3 +1,3 @@
-## 0.0.1 [Unreleased]
-
-- Initial version based on the Dart package template
+## 0.3.0
+ 
+- Initial release
